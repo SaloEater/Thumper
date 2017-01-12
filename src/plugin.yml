@@ -1,0 +1,10 @@
+main: com.salo.thumper.Main
+name: Thumper
+version: 1.0.0
+author: SaloEater
+description: Drill and monsters
+softdepend: [WorldGuard]
+commands:
+   th:
+      description: Give yourself thumper
+      usage: /th
