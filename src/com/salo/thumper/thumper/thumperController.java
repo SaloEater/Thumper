@@ -1,19 +1,18 @@
 package com.salo.thumper.thumper;
 
 import com.salo.thumper.Main;
-import com.salo.thumper.listeners.clickEvent;
+import com.sk89q.worldguard.bukkit.RegionContainer;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Chest;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
-import java.time.LocalDate;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -30,11 +29,9 @@ public class thumperController extends Thread {
     private boolean shallStop=false;
     private Logger logger;
 
-
     public thumperController(ArmorStand armorStand, String thumperOwner, int liveTime, int livedTime){
         super(thumperOwner);
         this.logger=Main.getPlugin().getLogger();
-        Main.getPlugin().getLogger().info("Controller");
         this.thumperOwner=thumperOwner;
         this.armorStand=armorStand;
         this.livedTime=livedTime;
@@ -49,26 +46,37 @@ public class thumperController extends Thread {
             } else {
                 this.armorStand.setCustomName(("§5Работа завершена"));
                 Location asLocBuffer = armorStand.getLocation();
-                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
 
-                    armorStand.remove();
-                    asLocBuffer.getBlock().setType(Material.OBSIDIAN);
-                    Inventory thumperReward = createLoot();
-                    Main.getPlugin().getServer().getPlayer(thumperOwner).openInventory(thumperReward);
-                    //chest.getInventory().setItem(1, new ItemStack(Material.RABBIT_FOOT));
+                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), new Runnable() {
+                    @Override
+                    public void run() {
+                        armorStand.remove();
+                        asLocBuffer.getBlock().setType(Material.OBSIDIAN);
+                        //try {
+                            RegionContainer container = Main.getPlugin().WEPlugin.getRegionContainer();
+                            RegionManager regions = container.get(Main.getPlugin().getServer().getWorld("world"));
+                            for(Player player : Main.getPlugin().getServer().getOnlinePlayers()){
+                                logger.info(player.getName()+":"+regions.getApplicableRegions(player.getLocation()).getRegions().toString());
+                                for(ProtectedRegion rg : regions.getApplicableRegions(player.getLocation()).getRegions()){
+                                    if(rg.getId().equals("drillplace"+thumperOwner.toLowerCase())){
+                                        Main.getPlugin().queuedRewards.put(player.getName(), createLoot());
+                                    }
+                                }
+                            }
+                            regions.removeRegion("drillPlace" + thumperOwner);
+                        /*} catch (NullPointerException e) {
+                            Main.getPlugin().getServer().getPlayer(thumperOwner).sendMessage(ChatColor.RED + "Проблема с регионами. Сообщите администрации, пожалуйста!");
+                        }*/
+                    }
                 }, 100);
-                this.shallStop=true;
+                shallStop=false;
                 Thread.currentThread().interrupt();
             }
             this.livedTime+=60;
             Thread.sleep(5000);
-            if(!this.shallStop){
-                new thumperController(this.armorStand, this.thumperOwner, this.liveTime, this.livedTime).start();
-            } else {
-                this.logger.info("Make chest");
-            }
+            if(!shallStop)new thumperController(this.armorStand, this.thumperOwner, this.liveTime, this.livedTime).start();
         } catch(InterruptedException e){
-            Main.getPlugin().getServer().getPlayer(thumperOwner).sendMessage(ChatColor.RED+"Плагин сломался. Сообщите администрации, пожалуйста!");
+            if(shallStop)Main.getPlugin().getServer().getPlayer(thumperOwner).sendMessage(ChatColor.RED+"Плагин сломался. Сообщите администрации, пожалуйста!");
         }
     }
 
@@ -85,12 +93,9 @@ public class thumperController extends Thread {
         Random rnd = new Random();
         Inventory generated = Bukkit.createInventory(null, 9, "Добытые ресурсы");
         amountAdded=rnd.nextInt(16);
-        this.logger.info("Added "+amountAdded+" slots");
         itemsAmount=amountFrom+amountAdded;
-        this.logger.info("Items="+itemsAmount);
         for(int i=0; i<itemsAmount; i++){
             randNum=rnd.nextInt(100);
-            this.logger.info("Random for "+i+" cycle : "+randNum);
             int sum=0;
             for(int j=0; j<chances.length; j++){
                 sum+=chances[j];
@@ -98,14 +103,11 @@ public class thumperController extends Thread {
                     if(j==0||j==1){
                         sameProc=rnd.nextInt(2);
                         if(sameProc<1){
-                            this.logger.info("Drop: "+ids[0]);
                             generated.addItem(new ItemStack(ids[0]));
                         } else {
-                            this.logger.info("Drop: "+ids[1]);
                             generated.addItem(new ItemStack(ids[1]));
                         }
                     } else {
-                        this.logger.info("Drop: "+ids[j]);
                         generated.addItem(new ItemStack(ids[j]));
                     }
                     break;

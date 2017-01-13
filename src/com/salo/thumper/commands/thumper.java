@@ -5,17 +5,12 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by user on 14.12.2016.
@@ -24,18 +19,37 @@ public class thumper implements CommandExecutor {
 
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
+        Player player = ((Player) commandSender).getPlayer();
+        if(args.length>0){
+            switch(args[0]){
+                case "get":
+                    ItemStack is = new ItemStack(Material.ARMOR_STAND, 1);
+                    ItemMeta im = is.getItemMeta();
+                    im.setDisplayName("Thumper");
+                    List<String> lore = new ArrayList<>();
+                    lore.add("Place to start");
+                    im.setLore(lore);
+                    is.setItemMeta(im);
+                    player.getInventory().addItem(is);
+                    break;
 
-            Player player = ((Player) commandSender).getPlayer();
-            ItemStack is = new ItemStack(Material.ARMOR_STAND, 1);
-            ItemMeta im = is.getItemMeta();
-            im.setDisplayName("Thumper");
-            List<String> lore = new ArrayList<>();
-            lore.add("Place to start");
-            im.setLore(lore);
-            is.setItemMeta(im);
-            player.getInventory().addItem(is);
+                case "receive":
+                    if(com.salo.thumper.Main.getPlugin().queuedRewards.containsKey(player.getName())){
+                        player.openInventory(com.salo.thumper.Main.getPlugin().queuedRewards.get(player.getName()));
+                    } else {
+                        player.sendMessage(ChatColor.RED + "У вас нет наград!");
+                    }
+                    break;
 
+                case "help":
+                    player.sendMessage("Введите "+ChatColor.RED+ChatColor.BOLD+"/th get"+ChatColor.RESET+", чтобы получить бур");
+                    player.sendMessage("Введите "+ChatColor.RED+ChatColor.BOLD+"/th receive"+ChatColor.RESET+", чтобы забрать ресурсы");
+                    player.sendMessage("Введите "+ChatColor.RED+ChatColor.BOLD+"/th help"+ChatColor.RESET+", чтобы вывести это сообщение");
+                    break;
+
+            }
+        }
         return false;
     }
 }
