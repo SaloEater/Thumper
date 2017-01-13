@@ -57,7 +57,7 @@ public class clickEvent implements Listener{
                             armorStand.setChestplate(new ItemStack(Material.GOLD_CHESTPLATE));
                             armorStand.setCustomNameVisible(true);
                             armorStand.setVisible(true);
-                            new thumperController(armorStand, drillPlace, e.getPlayer().getName(), 60, 0).start();
+                            new thumperController(armorStand, e.getPlayer().getName(), 60, 0).start();
                             Main.getPlugin().getLogger().info("BeforeDestroy");
                             drillPlace.clone().add(0,1,0).getBlock().setType(Material.AIR);
                         } else {

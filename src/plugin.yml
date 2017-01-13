@@ -3,7 +3,7 @@ name: Thumper
 version: 1.0.0
 author: SaloEater
 description: Drill and monsters
-softdepend: [WorldGuard]
+depend: [WorldGuard]
 commands:
    th:
       description: Give yourself thumper
