@@ -8,7 +8,9 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +22,7 @@ public class Main extends JavaPlugin {
     public WorldGuardPlugin WEPlugin = WGBukkit.getPlugin();
 
     public Map<String, Inventory> queuedRewards = new HashMap<String, Inventory>();
-
+    public List<String> activeDrills = new ArrayList<>();
 
     @Override
     public void onEnable() {

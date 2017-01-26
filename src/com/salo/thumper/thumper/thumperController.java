@@ -40,7 +40,6 @@ public class thumperController extends Thread {
 
     public void run(){
         try {
-            //Main.getPlugin().getLogger().info("Cycle");
             if(this.liveTime-this.livedTime!=0){
                 this.armorStand.setCustomName(("§5Осталось: "+(liveTime-livedTime)));
             } else {
@@ -52,7 +51,7 @@ public class thumperController extends Thread {
                     public void run() {
                         armorStand.remove();
                         asLocBuffer.getBlock().setType(Material.OBSIDIAN);
-                        //try {
+                        try {
                             RegionContainer container = Main.getPlugin().WEPlugin.getRegionContainer();
                             RegionManager regions = container.get(Main.getPlugin().getServer().getWorld("world"));
                             for(Player player : Main.getPlugin().getServer().getOnlinePlayers()){
@@ -64,12 +63,13 @@ public class thumperController extends Thread {
                                 }
                             }
                             regions.removeRegion("drillPlace" + thumperOwner);
-                        /*} catch (NullPointerException e) {
+                        } catch (NullPointerException e) {
                             Main.getPlugin().getServer().getPlayer(thumperOwner).sendMessage(ChatColor.RED + "Проблема с регионами. Сообщите администрации, пожалуйста!");
-                        }*/
+                        }
                     }
                 }, 100);
                 shallStop=false;
+                Main.getPlugin().activeDrills.remove(thumperOwner);
                 Thread.currentThread().interrupt();
             }
             this.livedTime+=60;

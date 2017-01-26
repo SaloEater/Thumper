@@ -22,9 +22,6 @@ import org.bukkit.inventory.ItemStack;
  */
 public class clickEvent implements Listener{
 
-    private int tCounter = 0;
-    private int timer;
-
     @EventHandler
     public void onClickEvent(PlayerInteractEvent e){
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK &&
@@ -34,11 +31,15 @@ public class clickEvent implements Listener{
             e.getPlayer().getItemInHand().getItemMeta().getLore().get(0).equals("Place to start"))
         {
             e.setCancelled(true);
-            inialiseDrill(e.getPlayer(), e.getClickedBlock().getLocation());
+            if(!Main.getPlugin().activeDrills.contains(e.getPlayer().getName())){
+                initDrill(e.getPlayer(), e.getClickedBlock().getLocation());
+            } else {
+                e.getPlayer().sendMessage(ChatColor.RED + "Дождитесь окончания текущего бура!");
+            }
         }
     }
 
-    private void inialiseDrill(Player player, Location drillPlace){
+    private void initDrill(Player player, Location drillPlace){
         player.setItemInHand(new ItemStack(Material.AIR));
         drillPlace.clone().getBlock().setType(Material.SPONGE);
         if(drillPlace.clone().add(0,1,0).getBlock().getType()==Material.AIR) {
@@ -51,7 +52,7 @@ public class clickEvent implements Listener{
             RegionContainer container = Main.getPlugin().WEPlugin.getRegionContainer();
             RegionManager regions = container.get(drillPlace.getWorld());
             regions.addRegion(drillRegion);
-            Main.getPlugin().getLogger().info("RegionCreated");
+            Main.getPlugin().activeDrills.add(player.getName());
             new thumperController(armorStand, player.getName(), 60, 0).start();
         } else {
             player.sendMessage(ChatColor.RED + "Здесь нельзя строить");

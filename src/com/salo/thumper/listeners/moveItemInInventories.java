@@ -24,14 +24,6 @@ public class moveItemInInventories implements Listener {
         } else if(inventory.getTitle().equals("Добытые ресурсы") && e.getClickedInventory().getTitle().equals("Добытые ресурсы")){
             if(e.getAction().equals(InventoryAction.HOTBAR_SWAP)||e.getAction().equals(InventoryAction.COLLECT_TO_CURSOR))e.setCancelled(true);
         }
-
-            /*if(e.getWhoClicked().getInventory().firstEmpty()!=-1 && e.getClickedInventory().equals("Добытые ресурсы")){
-                ItemStack is = inventory.getItem(e.getSlot());
-                e.getWhoClicked().getInventory().addItem(is);
-                inventory.setItem(e.getSlot(), new ItemStack(Material.AIR));
-            } else {
-                e.getWhoClicked().sendMessage(ChatColor.RED+"У вас недостаточно места в инвентаре");
-            }*/
     }
 
     @EventHandler

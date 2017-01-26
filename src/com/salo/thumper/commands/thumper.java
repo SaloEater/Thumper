@@ -38,7 +38,7 @@ public class thumper implements CommandExecutor {
                     if(com.salo.thumper.Main.getPlugin().queuedRewards.containsKey(player.getName())){
                         player.openInventory(com.salo.thumper.Main.getPlugin().queuedRewards.get(player.getName()));
                     } else {
-                        player.sendMessage(ChatColor.RED + "У вас нет наград!");
+                        player.sendMessage(ChatColor.RED + "Ваши закромы пустые!");
                     }
                     break;
 
