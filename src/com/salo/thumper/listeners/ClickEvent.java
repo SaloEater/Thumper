@@ -1,7 +1,7 @@
 package com.salo.thumper.listeners;
 
 import com.salo.thumper.Main;
-import com.salo.thumper.thumper.thumperController;
+import com.salo.thumper.thumper.ThumperController;
 import com.sk89q.worldguard.bukkit.RegionContainer;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
@@ -20,7 +20,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Created by user on 14.12.2016.
  */
-public class clickEvent implements Listener{
+public class ClickEvent implements Listener{
 
     @EventHandler
     public void onClickEvent(PlayerInteractEvent e){
@@ -31,7 +31,7 @@ public class clickEvent implements Listener{
             e.getPlayer().getItemInHand().getItemMeta().getLore().get(0).equals("Place to start"))
         {
             e.setCancelled(true);
-            if(!Main.getPlugin().activeDrills.contains(e.getPlayer().getName())){
+            if(!Main.getPlugin().getActiveDrills().contains(e.getPlayer().getName())){
                 initDrill(e.getPlayer(), e.getClickedBlock().getLocation());
             } else {
                 e.getPlayer().sendMessage(ChatColor.RED + "Дождитесь окончания текущего бура!");
@@ -40,7 +40,7 @@ public class clickEvent implements Listener{
     }
 
     private void initDrill(Player player, Location drillPlace){
-        player.setItemInHand(new ItemStack(Material.AIR));
+        //player.setItemInHand(new ItemStack(Material.AIR));
         drillPlace.clone().getBlock().setType(Material.SPONGE);
         if(drillPlace.clone().add(0,1,0).getBlock().getType()==Material.AIR) {
             ArmorStand armorStand = drillPlace.getWorld().spawn(drillPlace.clone().add(0.5,1,0.5), ArmorStand.class);
@@ -49,11 +49,11 @@ public class clickEvent implements Listener{
             armorStand.setCustomNameVisible(true);
             armorStand.setVisible(true);
             ProtectedRegion drillRegion = new ProtectedCuboidRegion("drillPlace"+player.getName().toLowerCase(), convertToSk89qBV(drillPlace.clone().add(-10, -drillPlace.getBlockY(), -10)), convertToSk89qBV(drillPlace.clone().add(10, 256-drillPlace.getBlockY(), 10)));
-            RegionContainer container = Main.getPlugin().WEPlugin.getRegionContainer();
+            RegionContainer container = Main.getPlugin().getWEPlugin().getRegionContainer();
             RegionManager regions = container.get(drillPlace.getWorld());
             regions.addRegion(drillRegion);
-            Main.getPlugin().activeDrills.add(player.getName());
-            new thumperController(armorStand, player.getName(), 60, 0).start();
+            Main.getPlugin().addActiveDrill(player.getName());
+            new ThumperController(armorStand, player.getName(), 5, 0).start();
         } else {
             player.sendMessage(ChatColor.RED + "Здесь нельзя строить");
         }

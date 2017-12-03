@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 /**
  * Created by user on 12.01.2017.
  */
-public class thumperController extends Thread {
+public class ThumperController extends Thread {
 
     private int liveTime;
     private int livedTime;
@@ -29,8 +29,8 @@ public class thumperController extends Thread {
     private boolean shallStop=false;
     private Logger logger;
 
-    public thumperController(ArmorStand armorStand, String thumperOwner, int liveTime, int livedTime){
-        super(thumperOwner);
+    public ThumperController(ArmorStand armorStand, String thumperOwner, int liveTime, int livedTime){
+        //super(thumperOwner);
         this.logger=Main.getPlugin().getLogger();
         this.thumperOwner=thumperOwner;
         this.armorStand=armorStand;
@@ -58,7 +58,7 @@ public class thumperController extends Thread {
                                 logger.info(player.getName()+":"+regions.getApplicableRegions(player.getLocation()).getRegions().toString());
                                 for(ProtectedRegion rg : regions.getApplicableRegions(player.getLocation()).getRegions()){
                                     if(rg.getId().equals("drillplace"+thumperOwner.toLowerCase())){
-                                        Main.getPlugin().queuedRewards.put(player.getName(), createLoot());
+                                        Main.getPlugin().addRewardForPlayer(player.getName(), createLoot());
                                     }
                                 }
                             }
@@ -69,19 +69,19 @@ public class thumperController extends Thread {
                     }
                 }, 100);
                 shallStop=false;
-                Main.getPlugin().activeDrills.remove(thumperOwner);
+                Main.getPlugin().getActiveDrills().remove(thumperOwner);
                 Thread.currentThread().interrupt();
             }
             this.livedTime+=60;
             Thread.sleep(5000);
-            if(!shallStop)new thumperController(this.armorStand, this.thumperOwner, this.liveTime, this.livedTime).start();
+            if(!shallStop)new ThumperController(this.armorStand, this.thumperOwner, this.liveTime, this.livedTime).start();
         } catch(InterruptedException e){
             if(shallStop)Main.getPlugin().getServer().getPlayer(thumperOwner).sendMessage(ChatColor.RED+"Плагин сломался. Сообщите администрации, пожалуйста!");
         }
     }
 
     private Inventory createLoot(){
-        int amountFrom=48, amountAdded, itemsAmount, randNum, sameProc;
+        int amountFrom=48, amountAdded, itemsAmount, randNum;
         int[] chances={35, 35, 15, 7, 5, 2, 1};
         Material[] ids = {Material.DIRT,
                           Material.COBBLESTONE,
@@ -101,8 +101,7 @@ public class thumperController extends Thread {
                 sum+=chances[j];
                 if(randNum<sum){
                     if(j==0||j==1){
-                        sameProc=rnd.nextInt(2);
-                        if(sameProc<1){
+                        if(rnd.nextInt(2)<1){
                             generated.addItem(new ItemStack(ids[0]));
                         } else {
                             generated.addItem(new ItemStack(ids[1]));

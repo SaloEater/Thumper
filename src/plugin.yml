@@ -1,4 +1,4 @@
-main: com.salo.thumper.Main
+main: Main
 name: Thumper
 version: 1.0.0
 author: SaloEater

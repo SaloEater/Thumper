@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by user on 14.12.2016.
  */
-public class thumper implements CommandExecutor {
+public class Thumper implements CommandExecutor {
 
 
     @Override
@@ -35,17 +35,17 @@ public class thumper implements CommandExecutor {
                     break;
 
                 case "receive":
-                    if(com.salo.thumper.Main.getPlugin().queuedRewards.containsKey(player.getName())){
+                    if(com.salo.thumper.Main.getPlugin().getQueuedRewards().containsKey(player.getName())){
                         player.openInventory(com.salo.thumper.Main.getPlugin().queuedRewards.get(player.getName()));
                     } else {
-                        player.sendMessage(ChatColor.RED + "Ваши закромы пустые!");
+                        player.sendMessage(ChatColor.RED + "Ваши закрома пустые!");
                     }
                     break;
 
                 case "help":
                     player.sendMessage("Введите "+ChatColor.RED+ChatColor.BOLD+"/th get"+ChatColor.RESET+", чтобы получить бур");
                     player.sendMessage("Введите "+ChatColor.RED+ChatColor.BOLD+"/th receive"+ChatColor.RESET+", чтобы забрать ресурсы");
-                    player.sendMessage("Введите "+ChatColor.RED+ChatColor.BOLD+"/th help"+ChatColor.RESET+", чтобы вывести это сообщение");
+                    player.sendMessage(ChatColor.BOLD+"/th help"+ChatColor.RESET+" выводит это сообщение");
                     break;
 
             }
